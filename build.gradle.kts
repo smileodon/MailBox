@@ -1,7 +1,7 @@
 plugins {
     java
     id("io.papermc.paperweight.userdev") version "1.7.2" // Check for new versions at https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
@@ -27,6 +27,9 @@ dependencies {
     bukkitLibrary("de.eldoria.util", "debugging", "2.0.3")
     bukkitLibrary("de.eldoria.util", "jackson-configuration", "2.0.3")
     bukkitLibrary("de.eldoria.jacksonbukkit", "jackson-bukkit", "1.2.0")
+    bukkitLibrary("de.chojo.sadu", "sadu-sqlite", "2.3.0")
+    bukkitLibrary("de.chojo.sadu", "sadu-datasource", "2.3.0")
+    bukkitLibrary("de.chojo.sadu", "sadu-queries", "2.3.0")
     bukkitLibrary("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
