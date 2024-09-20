@@ -1,5 +1,6 @@
-package de.smileodon.mailbox;
+package de.smileodon.mailbox.data;
 
+import de.smileodon.mailbox.MailBoxPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

@@ -1,5 +1,6 @@
 package de.smileodon.mailbox;
 
+import de.smileodon.mailbox.data.InBoxInventory;
 import org.bukkit.inventory.Inventory;
 
 public record MailBoxPlayer(
@@ -7,5 +8,5 @@ public record MailBoxPlayer(
         String currentName,
         long lastMailBoxChecked,
         long lastMailBoxModified,
-        Inventory mailBoxInventory) {
+        InBoxInventory mailBoxInventory) {
 }

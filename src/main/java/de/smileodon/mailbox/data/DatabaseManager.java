@@ -1,9 +1,10 @@
-package de.smileodon.mailbox;
+package de.smileodon.mailbox.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.eldoria.jacksonbukkit.JacksonPaper;
+import de.smileodon.mailbox.MailBoxPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +22,8 @@ public enum DatabaseManager {
          objectMapper = JsonMapper.builder()
                 .addModule(JacksonPaper.builder().build())
                 .build();
+
+         connect();
     }
 
     public void connect() {
@@ -79,7 +82,7 @@ public enum DatabaseManager {
                 String currentName = rs.getString("current_name");
                 long lastMailBoxChecked = rs.getLong("last_mailbox_checked");
                 long lastMailBoxModified = rs.getLong("last_mailbox_modified");
-                Inventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
+                InBoxInventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
 
                 return new MailBoxPlayer(uuid, currentName, lastMailBoxChecked, lastMailBoxModified, inventory);
             }
@@ -101,7 +104,7 @@ public enum DatabaseManager {
                 String currentName = rs.getString("current_name");
                 long lastMailBoxChecked = rs.getLong("last_mailbox_checked");
                 long lastMailBoxModified = rs.getLong("last_mailbox_modified");
-                Inventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
+                InBoxInventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
 
                 MailBoxPlayer player = new MailBoxPlayer(uuid, currentName, lastMailBoxChecked, lastMailBoxModified, inventory);
                 players.add(player);
@@ -114,9 +117,9 @@ public enum DatabaseManager {
         return players;
     }
 
-    private String serializeInventory(Inventory inventory) {
+    private String serializeInventory(InBoxInventory inBoxInventory) {
         try {
-            ItemStack[] items = inventory.getContents();
+            ItemStack[] items = inBoxInventory.getInventory().getContents();
             return objectMapper.writeValueAsString(items);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -124,19 +127,15 @@ public enum DatabaseManager {
         }
     }
 
-    private Inventory deserializeInventory(String data) {
+    private InBoxInventory deserializeInventory(String data) {
         try {
             ItemStack[] items = objectMapper.readValue(data, ItemStack[].class);
-            Inventory inventory = createEmptyInventory();
-            inventory.setContents(items);
-            return inventory;
+            InBoxInventory inBoxInventory = new InBoxInventory();
+            inBoxInventory.getInventory().setContents(items);
+            return inBoxInventory;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private Inventory createEmptyInventory() {
-        return Bukkit.createInventory(null, 27, "Mailbox");
     }
 }
