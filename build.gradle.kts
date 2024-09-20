@@ -50,7 +50,7 @@ tasks {
 
 bukkit {
     name = "MailBox"
-    main = "de.smileodon.MailBox.MailBoxPlugin"
+    main = "de.smileodon.mailbox.MailBoxPlugin"
     authors = listOf("Aljosha")
     website = "https://smileodon.de"
     apiVersion = "1.20"
