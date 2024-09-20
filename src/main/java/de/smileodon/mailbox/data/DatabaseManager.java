@@ -1,141 +1,84 @@
 package de.smileodon.mailbox.data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import de.chojo.sadu.datasource.DataSourceCreator;
+import de.chojo.sadu.mapper.RowMapperRegistry;
+import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
+import de.chojo.sadu.queries.converter.ValueConverter;
+import de.chojo.sadu.sqlite.databases.SqLite;
+import de.chojo.sadu.sqlite.mapper.SqLiteMapper;
+import de.chojo.sadu.updater.SqlUpdater;
 import de.eldoria.jacksonbukkit.JacksonPaper;
 import de.smileodon.mailbox.MailBoxPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import java.sql.*;
-import java.util.ArrayList;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public enum DatabaseManager {
     INSTANCE;
-    private Connection connection;
-    private final ObjectMapper objectMapper;
+    private final ValueConverter<InBoxInventory, String> IN_BOX_INVENTORY;
+
 
     DatabaseManager() {
-         objectMapper = JsonMapper.builder()
-                .addModule(JacksonPaper.builder().build())
-                .build();
-
-         connect();
+        var objectMapper = JsonMapper.builder()
+                                     .addModule(JacksonPaper.builder().build())
+                                     .build();
+        IN_BOX_INVENTORY = SqlValueConverter.create(objectMapper);
+        connect();
     }
 
     public void connect() {
+        DataSource dataSource = DataSourceCreator.create(SqLite.get())
+                                                 .configure(config -> config.path("plugins/MailBox/database.db"))
+                                                 .create()
+                                                 .build();
+        RowMapperRegistry registry = new RowMapperRegistry().register(MailBoxPlayer.create(IN_BOX_INVENTORY))
+                                                            .register(SqLiteMapper.getDefaultMapper());
+        QueryConfiguration.setDefault(QueryConfiguration.getDefault().edit(dataSource)
+                                                        .setExceptionHandler(Throwable::printStackTrace)
+                                                        .setRowMapperRegistry(registry)
+                                                        .build());
+
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:plugins/MailBox/database.db");
-        } catch (SQLException | ClassNotFoundException e) {
+            SqlUpdater.builder(dataSource, SqLite.get())
+                      .execute();
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void setup() {
-        String createTableSQL = """
-            CREATE TABLE IF NOT EXISTS mailbox_player (
-                uuid TEXT PRIMARY KEY,
-                current_name TEXT NOT NULL,
-                last_mailbox_checked INTEGER NOT NULL,
-                last_mailbox_modified INTEGER NOT NULL,
-                mail_box_inventory TEXT
-            );
-        """;
-
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute(createTableSQL);
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
     public void insertMailBoxPlayer(MailBoxPlayer player) {
         String insertSQL = """
-            INSERT OR REPLACE INTO mailbox_player (uuid, current_name, last_mailbox_checked, last_mailbox_modified, mail_box_inventory)
-            VALUES (?, ?, ?, ?, ?);
-        """;
-
-        try (PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
-            pstmt.setString(1, player.uuid());
-            pstmt.setString(2, player.currentName());
-            pstmt.setLong(3, player.lastMailBoxChecked());
-            pstmt.setLong(4, player.lastMailBoxModified());
-            pstmt.setString(5, serializeInventory(player.mailBoxInventory()));
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+                    INSERT OR REPLACE INTO mailbox_player (uuid, current_name, last_mailbox_checked, last_mailbox_modified, mail_box_inventory)
+                    VALUES (?, ?, ?, ?, ?);
+                """;
+        query(insertSQL)
+                .single(call()
+                        .bind(player.uuid())
+                        .bind(player.currentName())
+                        .bind(player.lastMailBoxChecked())
+                        .bind(player.lastMailBoxModified())
+                        .bind(player.mailBoxInventory(), IN_BOX_INVENTORY))
+                .insert();
     }
 
     public MailBoxPlayer getMailBoxPlayer(String uuid) {
-        String selectSQL = "SELECT * FROM mailbox_player WHERE uuid = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(selectSQL)) {
-            pstmt.setString(1, uuid);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                String currentName = rs.getString("current_name");
-                long lastMailBoxChecked = rs.getLong("last_mailbox_checked");
-                long lastMailBoxModified = rs.getLong("last_mailbox_modified");
-                InBoxInventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
-
-                return new MailBoxPlayer(uuid, currentName, lastMailBoxChecked, lastMailBoxModified, inventory);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return query("SELECT * FROM mailbox_player WHERE uuid = ?")
+                .single(call().bind(uuid))
+                .mapAs(MailBoxPlayer.class)
+                .first()
+                .orElse(null);
     }
 
     public List<MailBoxPlayer> getAllMailBoxPlayers() {
-        List<MailBoxPlayer> players = new ArrayList<>();
-        String selectAllSQL = "SELECT * FROM mailbox_player";
-
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(selectAllSQL)) {
-
-            while (rs.next()) {
-                String uuid = rs.getString("uuid");
-                String currentName = rs.getString("current_name");
-                long lastMailBoxChecked = rs.getLong("last_mailbox_checked");
-                long lastMailBoxModified = rs.getLong("last_mailbox_modified");
-                InBoxInventory inventory = deserializeInventory(rs.getString("mail_box_inventory"));
-
-                MailBoxPlayer player = new MailBoxPlayer(uuid, currentName, lastMailBoxChecked, lastMailBoxModified, inventory);
-                players.add(player);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return players;
-    }
-
-    private String serializeInventory(InBoxInventory inBoxInventory) {
-        try {
-            ItemStack[] items = inBoxInventory.getInventory().getContents();
-            return objectMapper.writeValueAsString(items);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private InBoxInventory deserializeInventory(String data) {
-        try {
-            ItemStack[] items = objectMapper.readValue(data, ItemStack[].class);
-            InBoxInventory inBoxInventory = new InBoxInventory();
-            inBoxInventory.getInventory().setContents(items);
-            return inBoxInventory;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return query("SELECT * FROM mailbox_player")
+                .single()
+                .mapAs(MailBoxPlayer.class)
+                .all();
     }
 }
