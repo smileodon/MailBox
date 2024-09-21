@@ -33,20 +33,24 @@ public enum DatabaseManager {
     }
 
     public void connect() {
+
         DataSource dataSource = DataSourceCreator.create(SqLite.get())
                                                  .configure(config -> config.path("plugins/MailBox/database.db"))
                                                  .create()
                                                  .build();
         RowMapperRegistry registry = new RowMapperRegistry().register(MailBoxPlayer.create(IN_BOX_INVENTORY))
                                                             .register(SqLiteMapper.getDefaultMapper());
-        QueryConfiguration.setDefault(QueryConfiguration.getDefault().edit(dataSource)
-                                                        .setExceptionHandler(Throwable::printStackTrace)
-                                                        .setRowMapperRegistry(registry)
-                                                        .build());
+
+        QueryConfiguration.setDefault(QueryConfiguration.builder(dataSource)
+                .setExceptionHandler(Throwable::printStackTrace)
+                .setRowMapperRegistry(registry)
+                .build());
 
         try {
             SqlUpdater.builder(dataSource, SqLite.get())
-                      .execute();
+                    .withClassLoader(getClass().getClassLoader())
+                    .execute();
+
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
