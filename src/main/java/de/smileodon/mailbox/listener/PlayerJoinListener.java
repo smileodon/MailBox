@@ -3,7 +3,8 @@ package de.smileodon.mailbox.listener;
 import de.smileodon.mailbox.MailBoxPlayer;
 import de.smileodon.mailbox.data.DataManager;
 import de.smileodon.mailbox.data.DatabaseManager;
-import net.minecraft.world.entity.player.Inventory;
+import de.smileodon.mailbox.data.InBoxInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -24,20 +25,8 @@ public class PlayerJoinListener implements Listener {
         MailBoxPlayer mailBoxPlayer = DataManager.INSTANCE.getMailBoxPlayer(uuid);
 
         if (mailBoxPlayer == null) {
-            // Create a new MailBoxPlayer object
-            Inventory inventory =  Bukkit.createInventory(null, 27, "Mailbox");
-
-            // Create a stone item with the name "MailBox"
-            ItemStack stone = new ItemStack(Material.STONE, 1);
-            ItemMeta meta = stone.getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName("MailBox");
-                stone.setItemMeta(meta);
-            }
-            inventory.addItem(stone); // Add the stone item to the inventory
-
             // Instantiate the new MailBoxPlayer object
-            mailBoxPlayer = new MailBoxPlayer(uuid, player.getName(), System.currentTimeMillis(), System.currentTimeMillis(), inventory);
+            mailBoxPlayer = new MailBoxPlayer(uuid, player.getName(), System.currentTimeMillis(), System.currentTimeMillis(), new InBoxInventory());
 
             // Add the MailBoxPlayer to the HashMap
             DataManager.INSTANCE.setMailBoxPlayer(mailBoxPlayer);

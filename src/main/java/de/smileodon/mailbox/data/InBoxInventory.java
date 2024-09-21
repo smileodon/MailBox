@@ -11,6 +11,10 @@ public class InBoxInventory implements InventoryHolder {
         public InBoxInventory() {
             // Create an Inventory with 27 slots, `this` here is our InventoryHolder.
             this.inventory = Bukkit.createInventory(this, 27, "MailBox");
+
+
+
+
         }
 
         @Override
