@@ -18,6 +18,7 @@ public class MailBoxPlugin extends JavaPlugin {
             pluginFolder.mkdirs();  // Create the folder if it doesn't exist
             getLogger().info("Plugin folder created.");
         }
+        DatabaseManager instance = DatabaseManager.INSTANCE;
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
