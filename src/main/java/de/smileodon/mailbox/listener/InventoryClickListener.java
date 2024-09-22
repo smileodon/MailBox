@@ -24,10 +24,7 @@ public class InventoryClickListener implements Listener {
 
         // Check if the holder is InBoxInventory
         if (holder instanceof InBoxInventory) {
-            // Prevent placing items but allow taking items out (so the mailbox oes not become a backpack)
-            if (event.getAction().name().contains("PLACE")) {
-                event.setCancelled(true);  // Cancel placing items
-            }
+
         }
 
         // Check if the holder is OutBoxInventory
