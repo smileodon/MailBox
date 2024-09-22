@@ -22,13 +22,9 @@ public class InventoryClickListener implements Listener {
         InventoryHolder holder = inventory.getHolder();
         Player player = (Player) event.getWhoClicked();
 
-        // Check if the holder is InBoxInventory
-        if (holder instanceof InBoxInventory) {
-
-        }
 
         // Check if the holder is OutBoxInventory
-        else if (holder instanceof OutBoxInventory) {
+        if (holder instanceof OutBoxInventory) {
             // Prevent players from moving or removing the item at position 8
             if (event.getSlot() == 8) {
                 if (event.getClick() == ClickType.LEFT) {
