@@ -85,4 +85,6 @@ public enum DatabaseManager {
                 .mapAs(MailBoxPlayer.class)
                 .all();
     }
+
+
 }

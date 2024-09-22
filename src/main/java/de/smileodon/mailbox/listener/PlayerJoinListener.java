@@ -4,15 +4,12 @@ import de.smileodon.mailbox.MailBoxPlayer;
 import de.smileodon.mailbox.data.DataManager;
 import de.smileodon.mailbox.data.DatabaseManager;
 import de.smileodon.mailbox.data.InBoxInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerJoinListener implements Listener {
 
@@ -22,7 +19,7 @@ public class PlayerJoinListener implements Listener {
         String uuid = player.getUniqueId().toString();
 
         // Check if the player is already in the HashMap
-        MailBoxPlayer mailBoxPlayer = DataManager.INSTANCE.getMailBoxPlayer(uuid);
+        MailBoxPlayer mailBoxPlayer = DataManager.INSTANCE.getMailBoxPlayerByUUID(uuid);
 
         if (mailBoxPlayer == null) {
             // Instantiate the new MailBoxPlayer object
@@ -33,6 +30,14 @@ public class PlayerJoinListener implements Listener {
 
             // Insert the MailBoxPlayer into the database
             DatabaseManager.INSTANCE.insertMailBoxPlayer(mailBoxPlayer);
+        } else {
+            if(mailBoxPlayer.lastMailBoxModified() >= mailBoxPlayer.lastMailBoxChecked()){
+                final Component component = MiniMessage.miniMessage().deserialize("<blue>You have unopened mail! Type <color:#f7ccff><color:#ff2172>/mailbox</color></color> to open your mailbox.</blue>");
+                player.sendMessage(component);
+            }
+            if(!mailBoxPlayer.currentName().equalsIgnoreCase(player.getName())){
+                DataManager.INSTANCE.updatePlayerName(player.getUniqueId().toString(), player.getName());
+            }
         }
     }
 }

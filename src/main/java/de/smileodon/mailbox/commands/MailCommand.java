@@ -1,7 +1,7 @@
 package de.smileodon.mailbox.commands;
 
+import de.smileodon.mailbox.data.DataManager;
 import de.smileodon.mailbox.data.OutBoxInventory;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +16,13 @@ public class MailCommand implements CommandExecutor {
             if (player.hasPermission("mailbox.send")) {
                 if (args.length == 1) {
                     String targetPlayerName = args[0];
-                    OutBoxInventory outBoxInventory =new OutBoxInventory(false, targetPlayerName);
-                    player.openInventory(outBoxInventory.getInventory());
+                    if(DataManager.INSTANCE.getMailBoxPlayerByName(targetPlayerName)!=null){
+                        OutBoxInventory outBoxInventory =new OutBoxInventory(false, targetPlayerName);
+                        player.openInventory(outBoxInventory.getInventory());
+
+                    } else {
+                        player.sendMessage("Unknown player.");
+                    }
                 } else {
                     player.sendMessage("Please specify a player name.");
                 }

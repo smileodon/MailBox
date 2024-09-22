@@ -71,7 +71,7 @@ bukkit {
             permission = "mailbox.send.all"
             permissionMessage = ""
         }
-        register("mailox"){
+        register("mailbox"){
             description = "Opens your mailbox."
             usage = "/mailbox"
             permission = "mailbox.open"
