@@ -1,5 +1,7 @@
 package de.smileodon.mailbox;
 
+import de.smileodon.mailbox.commands.MailAllCommand;
+import de.smileodon.mailbox.commands.MailCommand;
 import de.smileodon.mailbox.data.DatabaseManager;
 import de.smileodon.mailbox.listener.InventoryClickListener;
 import de.smileodon.mailbox.listener.PlayerJoinListener;
@@ -21,6 +23,8 @@ public class MailBoxPlugin extends JavaPlugin {
         DatabaseManager instance = DatabaseManager.INSTANCE;
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        this.getCommand("mail").setExecutor(new MailCommand());
+        this.getCommand("mailall").setExecutor(new MailAllCommand());
 
 
     }

@@ -58,4 +58,25 @@ bukkit {
     website = "https://smileodon.de"
     apiVersion = "1.20"
 
+    commands{
+        register("mail"){
+            description = "Send mail to a specific player."
+            usage = "/mail [playername]"
+            permission = "mailbox.send"
+            permissionMessage = ""
+        }
+        register("mailall"){
+            description = "Send mail to everyone."
+            usage = "/mailall"
+            permission = "mailbox.send.all"
+            permissionMessage = ""
+        }
+        register("mailox"){
+            description = "Opens your mailbox."
+            usage = "/mailbox"
+            permission = "mailbox.open"
+            permissionMessage = ""
+        }
+    }
+
 }
