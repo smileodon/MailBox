@@ -17,10 +17,10 @@ public class MailBoxPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        createPluginFolder();
         DatabaseManager databaseManager = DatabaseManager.INSTANCE;
         DataManager dataManager = DataManager.INSTANCE;
         dataManager.setMultipleMailBoxPlayers(databaseManager.getAllMailBoxPlayers());
-        createPluginFolder();
         registerCommandsAndListener();
     }
 
