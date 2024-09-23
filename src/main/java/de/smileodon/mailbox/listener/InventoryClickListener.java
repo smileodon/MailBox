@@ -23,7 +23,7 @@ public class InventoryClickListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Inventory inventory = event.getInventory();
+        Inventory inventory = event.getClickedInventory();
         if (inventory.getType() == InventoryType.CHEST) {
             InventoryHolder holder = inventory.getHolder();
             Player player = (Player) event.getWhoClicked();
