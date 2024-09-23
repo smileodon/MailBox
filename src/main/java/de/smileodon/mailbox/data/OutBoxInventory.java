@@ -24,22 +24,40 @@ public class OutBoxInventory implements InventoryHolder {
         }
 
         private void init(){
-            // Create an Inventory with 9 slots, `this` here is our InventoryHolder.
-            this.inventory = Bukkit.createInventory(this, 9);
-            ItemStack greenWool = new ItemStack(Material.GREEN_WOOL);
-            ItemMeta woolMeta = greenWool.getItemMeta();
-
-            if (woolMeta != null) {
-                woolMeta.setDisplayName("Send");
-                greenWool.setItemMeta(woolMeta);
-            }
-            this.inventory.setItem(8, greenWool);
+            this.inventory = Bukkit.createInventory(this, 27);
+            populateInventory();
         }
 
         @Override
         public Inventory getInventory() {
             return this.inventory;
         }
+
+    private void populateInventory(){
+        ItemStack blackGlassPane = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta blackGlassPaneMeta = blackGlassPane.getItemMeta();
+        blackGlassPaneMeta.setDisplayName(" ");
+        blackGlassPane.setItemMeta(blackGlassPaneMeta);
+
+        ItemStack greenGlassPane = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta greenMeta = greenGlassPane.getItemMeta();
+        greenMeta.setDisplayName("Confirm");
+        greenGlassPane.setItemMeta(greenMeta);
+
+        ItemStack redGlassPane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta redMeta = greenGlassPane.getItemMeta();
+        greenMeta.setDisplayName("Cancel");
+        greenGlassPane.setItemMeta(greenMeta);
+
+        int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+        for (int slot : borderSlots) {
+            inventory.setItem(slot, blackGlassPane);
+        }
+
+        inventory.setItem(26, greenGlassPane);
+        inventory.setItem(18, greenGlassPane);
+
+    }
 
     public boolean isSendToAll() {
         return sendToAll;
