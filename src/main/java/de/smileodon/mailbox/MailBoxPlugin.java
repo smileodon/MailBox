@@ -28,8 +28,8 @@ public class MailBoxPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new InventoryClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryCloseListener(), this);
-        this.getCommand("mail").setExecutor(new MailCommand());
-        this.getCommand("mailall").setExecutor(new MailAllCommand());
+        this.getCommand("sendmail").setExecutor(new MailCommand());
+        this.getCommand("sendmailall").setExecutor(new MailAllCommand());
         this.getCommand("mailbox").setExecutor(new MailBoxCommand());
 
     }

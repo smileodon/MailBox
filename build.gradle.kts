@@ -59,15 +59,15 @@ bukkit {
     apiVersion = "1.20"
 
     commands{
-        register("mail"){
+        register("sendmail"){
             description = "Send mail to a specific player."
-            usage = "/mail [playername]"
+            usage = "/sendmail [playername]"
             permission = "mailbox.send"
             permissionMessage = ""
         }
-        register("mailall"){
+        register("sendmailall"){
             description = "Send mail to everyone."
-            usage = "/mailall"
+            usage = "/sendmailall"
             permission = "mailbox.send.all"
             permissionMessage = ""
         }

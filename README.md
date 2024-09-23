@@ -3,8 +3,8 @@
 ### Feature Overview
 
 #### 1. **Send mail**
-- **/mailall**: Allows admins to send items to all players, both online and offline. It uses a GUI interface where multiple items can be added for distribution to all players with ease.
-- **/mail [playername]**: Enables admins to send items to a specific player, even if they are offline. The player will receive the items in their personal mailbox, accessible through a user-friendly GUI system.
+- **/sendmailall**: Allows admins to send items to all players, both online and offline. It uses a GUI interface where multiple items can be added for distribution to all players with ease.
+- **/sendmail [playername]**: Enables admins to send items to a specific player, even if they are offline. The player will receive the items in their personal mailbox, accessible through a user-friendly GUI system.
 
 #### 2. **Player Mailboxes**
 Each player has a personal mailbox to store items sent by admins. Players can access their mailbox at any timeusing the /mailbox command. The system supports both online and offline players, ensuring they receive their items as soon as they log in.
@@ -19,11 +19,11 @@ Mailboxes are stored securely in a local SQLite database, ensuring efficient and
 
 ### Command Permissions and Usage
 
-| Command                | Permission           | Description                                      |
-|------------------------|----------------------|--------------------------------------------------|
-| `/mail [player]`        | `mailbox.send`        | Send mail to a specific player.                  |
-| `/mailall`              | `mailbox.send.all`    | Send mail to all players (online and offline).   |
-| `/mailbox`              | `mailbox.open`        | Open your personal mailbox to retrieve items.    |
+| Command              | Permission           | Description                                      |
+|----------------------|----------------------|--------------------------------------------------|
+| `/sendmail [player]` | `mailbox.send`        | Send mail to a specific player.                  |
+| `/sendmailall`       | `mailbox.send.all`    | Send mail to all players (online and offline).   |
+| `/mailbox`           | `mailbox.open`        | Open your personal mailbox to retrieve items.    |
 
 
 ## Technical information
