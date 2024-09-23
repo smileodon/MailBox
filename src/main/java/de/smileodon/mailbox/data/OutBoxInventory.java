@@ -24,7 +24,7 @@ public class OutBoxInventory implements InventoryHolder {
         }
 
         private void init(){
-            this.inventory = Bukkit.createInventory(this, 27);
+            this.inventory = Bukkit.createInventory(this, 27, "Send Mail");
             populateInventory();
         }
 
@@ -55,7 +55,7 @@ public class OutBoxInventory implements InventoryHolder {
         }
 
         inventory.setItem(26, greenGlassPane);
-        inventory.setItem(18, greenGlassPane);
+        inventory.setItem(18, redGlassPane);
 
     }
 
