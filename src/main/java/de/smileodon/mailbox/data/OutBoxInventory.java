@@ -46,8 +46,8 @@ public class OutBoxInventory implements InventoryHolder {
 
         ItemStack redGlassPane = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta redMeta = greenGlassPane.getItemMeta();
-        greenMeta.setDisplayName("Cancel");
-        greenGlassPane.setItemMeta(greenMeta);
+        redMeta.setDisplayName("Cancel");
+        redGlassPane.setItemMeta(redMeta);
 
         int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
         for (int slot : borderSlots) {
